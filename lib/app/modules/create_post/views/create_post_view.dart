@@ -73,6 +73,20 @@ class CreatePostView extends GetView<CreatePostController> {
               ),
               maxLines: 4,
             ),
+            const SizedBox(height: 30),
+            Obx(
+              () => controller.isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton.icon(
+                      onPressed: controller.uploadPost,
+                      icon: const Icon(Icons.send),
+                      label: const Text('Paylaş'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        textStyle: const TextStyle(fontSize: 18),
+                      ),
+                    ),
+            ),
           ],
         ),
       ),

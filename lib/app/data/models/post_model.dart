@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class PostModel {
   final String id;
   final String authorId;
-  final String imageUrl;
+  final String? imageUrl;
   final String caption;
   final int likeCount;
   final Timestamp timestamp;
@@ -14,7 +14,7 @@ class PostModel {
   PostModel({
     required this.id,
     required this.authorId,
-    required this.imageUrl,
+    this.imageUrl,
     required this.caption,
     required this.likeCount,
     required this.timestamp,
@@ -27,7 +27,7 @@ class PostModel {
     return PostModel(
       id: doc.id,
       authorId: map['authorId'] ?? '',
-      imageUrl: map['imageUrl'] ?? '',
+      imageUrl: map['imageUrl'],
       caption: map['caption'] ?? '',
       likeCount: map['likeCount'] ?? 0,
       timestamp: map['timestamp'] ?? Timestamp.now(),

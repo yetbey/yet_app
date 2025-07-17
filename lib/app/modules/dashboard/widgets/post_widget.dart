@@ -37,20 +37,24 @@ class PostWidget extends StatelessWidget {
           ),
 
           // Post Image
-          Image.network(
-            post.imageUrl,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: 300, // constant maybe change
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Container(
-                height: 300,
-                color: Colors.grey[300],
-                child: const Center(child: CircularProgressIndicator()),
-              );
-            },
-          ),
+          if (post.imageUrl != null && post.imageUrl!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Image.network(
+                post.imageUrl!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 300, // constant maybe change
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    height: 300,
+                    color: Colors.grey[300],
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
+                },
+              ),
+            ),
 
           // Buttons
           Padding(
