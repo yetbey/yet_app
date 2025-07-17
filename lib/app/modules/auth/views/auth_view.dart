@@ -25,6 +25,25 @@ class AuthView extends GetView<AuthController> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
+                if (!controller.isLogin.value) ...[
+                  TextField(
+                    controller: controller.usernameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Kullanıcı Adı',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.alternate_email),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: controller.displayNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Ad Soyad',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.person),
+                    ),
+                  ),
+                ],
                 TextField(
                   controller: controller.emailController,
                   decoration: const InputDecoration(

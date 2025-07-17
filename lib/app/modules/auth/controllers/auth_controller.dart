@@ -8,6 +8,8 @@ class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  final usernameController = TextEditingController();
+  final displayNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -30,8 +32,13 @@ class AuthController extends GetxController {
       // If registering is successfuil, create a doc on Firebase
       if (userCredential.user != null) {
         await _firestore.collection('users').doc(userCredential.user!.uid).set({
+          'username': usernameController.text.trim(),
+          'displayName': displayNameController.text.trim(),
           'email': emailController.text.trim(),
-          'balance': 0.0,
+          'bio': 'Yeni Hesap',
+          'profilePhotoUrl': null,
+          'followers': [],
+          'following': [],
           'createdAt': Timestamp.now(),
         });
       }
@@ -73,6 +80,8 @@ class AuthController extends GetxController {
 
   @override
   void onClose() {
+    usernameController.dispose();
+    displayNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     super.onClose();
