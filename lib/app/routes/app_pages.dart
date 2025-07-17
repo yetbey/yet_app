@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
 import 'package:yet_app/app/modules/auth/bindings/auth_binding.dart';
 import 'package:yet_app/app/modules/auth/views/auth_view.dart';
+import 'package:yet_app/app/modules/create_post/bindings/create_post_binding.dart';
+import 'package:yet_app/app/modules/create_post/views/create_post_view.dart';
 import 'package:yet_app/app/modules/dashboard/bindings/dashboard_binding.dart';
 import 'package:yet_app/app/modules/dashboard/views/dashboard_view.dart';
-
 part 'app_routes.dart';
 
 class AppPages {
@@ -22,6 +23,11 @@ class AppPages {
       name: Routes.dashboard,
       page: () => const DashboardView(),
       binding: DashboardBinding(),
+    ),
+    GetPage(
+      name: Routes.createPost,
+      page: () => const CreatePostView(),
+      binding: CreatePostBinding(),
     ),
   ];
 }

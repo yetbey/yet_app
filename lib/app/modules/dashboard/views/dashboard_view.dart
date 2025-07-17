@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yet_app/app/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:yet_app/app/modules/dashboard/widgets/post_widget.dart';
+import 'package:yet_app/app/routes/app_pages.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -49,7 +50,7 @@ class DashboardView extends GetView<DashboardController> {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.snackbar("Yakında", "Bu özellik yakında eklenecek");
+          Get.toNamed(Routes.createPost);
         },
         child: const Icon(Icons.add_a_photo),
       ),
