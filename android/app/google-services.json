@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "930109818035",
+    "project_id": "yet-app-29290",
+    "storage_bucket": "yet-app-29290.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930109818035:android:cd352564d5da176f651cc6",
+        "android_client_info": {
+          "package_name": "com.example.yet_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTFaPlD0E_J2JZrznajY53-lPn9FtO8gs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
