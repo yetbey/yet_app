@@ -42,19 +42,35 @@ class ProfileController extends GetxController {
   Future<void> toggleFollow() async {
     final currentUserRef = _firestore.collection('users').doc(_currentUserId);
 
+    // Değişikliği UI'da anında göstermek için yerel kullanıcı nesnesini güncelliyoruz.
+    final localUser = user.value;
+    if (localUser == null) return;
+
     if (isFollowing.value) {
-      // Takipten Çıkma (Sadece kendi listesinden çıkarır)
+      // --- Takipten Çıkma İşlemi ---
+      isFollowing.value = false;
+      localUser.followers.remove(_currentUserId); // Lokal listeden çıkar
+
+      // Arka planda Firestore'u güncelle
       await currentUserRef.update({
         'following': FieldValue.arrayRemove([_userId])
       });
-      isFollowing.value = false;
+
     } else {
-      // Takip Etme (Sadece kendi listesine ekler)
+      // --- Takip Etme İşlemi ---
+      isFollowing.value = true;
+      localUser.followers.add(_currentUserId); // Lokal listeye ekle
+
+      // Arka planda Firestore'u güncelle
       await currentUserRef.update({
         'following': FieldValue.arrayUnion([_userId])
       });
-      isFollowing.value = true;
     }
+
+    // ÖNEMLİ: GetX'e 'user' nesnesinin içeriğinin değiştiğini bildiriyoruz.
+    // Bu komut, 'user'ı dinleyen tüm Obx widget'larının (takipçi sayısı gibi)
+    // kendilerini yeniden çizmesini tetikler.
+    user.refresh();
   }
 
   Future<void> fetchUserPosts() async {
