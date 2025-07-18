@@ -20,52 +20,30 @@ class PostWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Post Header - Username and Profile Picture
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Get.toNamed('/profile/${post.authorId}');
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: post.authorProfilePhotoUrl != null
-                              ? NetworkImage(post.authorProfilePhotoUrl!)
-                              : null,
-                          child: post.authorProfilePhotoUrl == null
-                              ? const Icon(Icons.person, size: 20)
-                              : null,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          post.authorUsername,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+          GestureDetector(
+            onTap: () {
+              Get.toNamed('/profile/${post.authorId}');
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: post.authorProfilePhotoUrl != null
+                        ? NetworkImage(post.authorProfilePhotoUrl!)
+                        : null,
+                    child: post.authorProfilePhotoUrl == null
+                        ? const Icon(Icons.person, size: 20)
+                        : null,
                   ),
-                ),
-                const Spacer(),
-                if (post.authorId == currentUserId)
-                  PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'delete') {
-                        _showDeleteDialog(context, controller, post.id);
-                      }
-                    },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      const PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Text('Sil'),
-                      ),
-                    ],
+                  const SizedBox(width: 10),
+                  Text(
+                    post.authorUsername,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-              ],
+                ],
+              ),
             ),
           ),
 
@@ -154,18 +132,4 @@ class PostWidget extends StatelessWidget {
       ),
     );
   }
-
-  void _showDeleteDialog(BuildContext context, PostController controller, String postId) {
-    Get.defaultDialog(
-      title: "Gönderiyi Sil",
-      middleText: "Bu gönderiyi kalıcı olarak silmek istediğinizden emin misiniz?",
-      textConfirm: "Evet, Sil",
-      textCancel: "İptal",
-      confirmTextColor: Colors.white,
-      onConfirm: () {
-        controller.deletePost(postId); // post.id'yi controller'a iletiyoruz
-      },
-    );
-  }
-
 }
