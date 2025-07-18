@@ -7,6 +7,7 @@ class PostModel {
   final String caption;
   final int likeCount;
   final Timestamp timestamp;
+  final List likes;
 
   final String authorUsername;
   final String? authorProfilePhotoUrl;
@@ -15,6 +16,7 @@ class PostModel {
     required this.id,
     required this.authorId,
     this.imageUrl,
+    required this.likes,
     required this.caption,
     required this.likeCount,
     required this.timestamp,
@@ -30,6 +32,7 @@ class PostModel {
       imageUrl: map['imageUrl'],
       caption: map['caption'] ?? '',
       likeCount: map['likeCount'] ?? 0,
+      likes: List.from(map['likes'] ?? []),
       timestamp: map['timestamp'] ?? Timestamp.now(),
       authorUsername: map['authorUsername'] ?? 'bilinmeyen',
       authorProfilePhotoUrl: map['authorProfilePhotoUrl'],

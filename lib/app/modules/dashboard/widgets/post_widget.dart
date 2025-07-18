@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yet_app/app/data/models/post_model.dart';
+import 'package:get/get.dart';
+import 'package:yet_app/app/modules/dashboard/controllers/post_controller.dart';
 
 class PostWidget extends StatelessWidget {
   final PostModel post;
@@ -7,6 +10,9 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final PostController controller = Get.put(PostController(), tag: post.id);
+    final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final bool isLiked = post.likes.contains(currentUserId);
     return Card(
       elevation: 2.0,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
@@ -63,11 +69,22 @@ class PostWidget extends StatelessWidget {
               children: [
                 IconButton(onPressed: () {}, icon: Icon(Icons.favorite_border)),
                 IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.comment_outlined),
+                  onPressed: () => controller.toggleLike(post.id, post.likes),
+                  icon: Icon(
+                    isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: isLiked ? Colors.red : Colors.grey,
+                  ),
                 ),
                 IconButton(onPressed: () {}, icon: Icon(Icons.send_outlined)),
               ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              '${post.likeCount} beğeni',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
 
