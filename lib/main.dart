@@ -18,14 +18,11 @@ class YetBank extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Yet Bank',
+      title: 'Yet App',
       debugShowCheckedModeBanner: false,
       initialRoute: AppPages.initial,
       getPages: AppPages.routes,
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: ThemeData.light(),
       home: const Scaffold(body: Center(child: Text('Firebase Bağlandı!'))),
     );
   }

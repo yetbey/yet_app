@@ -43,7 +43,7 @@ class AuthController extends GetxController {
         });
       }
 
-      Get.offAllNamed(Routes.dashboard);
+      Get.offAllNamed(Routes.root);
     } on FirebaseAuthException catch (e) {
       Get.snackbar(
         'Kayıt Hatası',
@@ -64,7 +64,7 @@ class AuthController extends GetxController {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      Get.offAllNamed(Routes.dashboard);
+      Get.offAllNamed(Routes.root);
     } on FirebaseAuthException catch (e) {
       Get.snackbar(
         'Giriş Hatası',

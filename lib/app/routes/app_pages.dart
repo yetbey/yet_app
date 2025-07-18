@@ -9,15 +9,28 @@ import 'package:yet_app/app/modules/profile/bindings/profile_binding.dart';
 import 'package:yet_app/app/modules/profile/views/profile_view.dart';
 import 'package:yet_app/app/modules/edit_profile/bindings/edit_profile_binding.dart';
 import 'package:yet_app/app/modules/edit_profile/views/edit_profile_view.dart';
-
 import '../modules/post_detail/bindings/post_detail_binding.dart';
 import '../modules/post_detail/views/post_detail_view.dart';
+import '../modules/root/bindings/root_binding.dart';
+import '../modules/root/views/root_view.dart';
+import '../modules/splash/bindings/splash_binding.dart';
+import '../modules/splash/views/controller_view.dart';
 part 'app_routes.dart';
 
 class AppPages {
-  static const initial = Routes.auth;
+  static const initial = Routes.splash;
 
   static final routes = <GetPage>[
+    GetPage(
+      name: Routes.splash,
+      page: () => const SplashView(),
+      binding: SplashBinding(),
+    ),
+    GetPage(
+      name: Routes.root,
+      page: () => const RootView(),
+      binding: RootBinding(),
+    ),
     /// AUTH
     GetPage(
       name: Routes.auth,
