@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_pages.dart';
+import '../../dashboard/widgets/post_widget.dart';
 import '../controllers/explore_controller.dart';
 
 class ExploreView extends GetView<ExploreController> {
@@ -16,22 +17,13 @@ class ExploreView extends GetView<ExploreController> {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        return GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 2,
-            mainAxisSpacing: 2,
-          ),
+        return ListView.builder(
           itemCount: controller.posts.length,
           itemBuilder: (context, index) {
             final post = controller.posts[index];
-            // Sadece resmi olan gönderileri göster
-            if (post.imageUrl == null) return const SizedBox.shrink();
-
-            return GestureDetector(
-              onTap: () => Get.toNamed('/post/${post.id}'),
-              child: Image.network(post.imageUrl!, fit: BoxFit.cover),
-            );
+            // Her bir gönderi için PostWidget'ı çağırıyoruz.
+            // PostWidget zaten her türlü gönderiyi (resimli/metin) nasıl göstereceğini biliyor.
+            return PostWidget(post: post);
           },
         );
       }),
