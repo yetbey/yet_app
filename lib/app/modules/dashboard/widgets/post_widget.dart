@@ -89,35 +89,6 @@ class PostWidget extends StatelessWidget {
               ),
             ),
 
-          // Buttons
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: () => controller.toggleLike(post.id, post.likes),
-                  icon: Icon(
-                    isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: isLiked ? Colors.red : Colors.grey,
-                  ),
-                ),
-                IconButton(onPressed: () {
-                  Get.toNamed('/post/${post.id}');
-                }, icon: Icon(Icons.comment_outlined)),
-                IconButton(onPressed: () {}, icon: Icon(Icons.send_outlined)),
-              ],
-            ),
-          ),
-
-          // Like Count
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              '${post.likeCount} beğeni',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-
           // Explanation
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -138,18 +109,42 @@ class PostWidget extends StatelessWidget {
             ),
           ),
 
-          if (post.commentCount > 0)
-            GestureDetector(
-              onTap: () => Get.toNamed('/post/${post.id}'),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
-                child: Text(
-                  '${post.commentCount} yorumun tümünü gör',
-                  style: const TextStyle(color: Colors.grey),
+          // Buttons
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: Row(
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => controller.toggleLike(post.id, post.likes),
+                      icon: Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        color: isLiked ? Colors.red : Colors.grey,
+                      ),
+                    ),
+                    Text(
+                      post.likeCount.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-              ),
+                Row(
+                  children: [
+                    IconButton(onPressed: () {
+                      Get.toNamed('/post/${post.id}');
+                    }, icon: Icon(Icons.comment_outlined)),
+                    Text(
+                      post.commentCount.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                IconButton(onPressed: () {}, icon: Icon(Icons.send_outlined)),
+              ],
             ),
-          const SizedBox(height: 8),
+          ),
+
         ],
       ),
     );
