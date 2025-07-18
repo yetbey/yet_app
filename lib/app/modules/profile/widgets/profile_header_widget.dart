@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yet_app/app/data/models/user_model.dart';
+import 'package:get/get.dart';
+import '../../../routes/app_pages.dart';
+import '../controllers/profile_controller.dart';
 
 class ProfileHeaderWidget extends StatelessWidget {
   final UserModel user;
@@ -12,6 +15,7 @@ class ProfileHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<ProfileController>();
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -51,6 +55,19 @@ class ProfileHeaderWidget extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(user.bio),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () async {
+                var result = await Get.toNamed(Routes.editProfile);
+                if (result == true) {
+                  controller.fetchUserData();
+                }
+              },
+              child: const Text("Profili Düzenle"),
+            ),
+          ),
         ],
       ),
     );
