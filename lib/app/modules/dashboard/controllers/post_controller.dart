@@ -25,4 +25,19 @@ class PostController extends GetxController {
       });
     }
   }
+
+  Future<void> deletePost(String postId) async {
+    if (Get.isDialogOpen ?? false) {
+      Get.back();
+    }
+
+    try {
+      await _firestore.collection('posts').doc(postId).delete();
+      Get.snackbar("Başarılı", "Gönderiniz silindi.");
+    } catch (e) {
+      Get.snackbar("Hata", "Gönderi silinirken bir sorun oluştu.");
+    }
+
+  }
+
 }
