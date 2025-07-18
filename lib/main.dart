@@ -23,7 +23,6 @@ class YetBank extends StatelessWidget {
       initialRoute: AppPages.initial,
       getPages: AppPages.routes,
       theme: ThemeData.light(),
-      home: const Scaffold(body: Center(child: Text('Firebase Bağlandı!'))),
     );
   }
 }
