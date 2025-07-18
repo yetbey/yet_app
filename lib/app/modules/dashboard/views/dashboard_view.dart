@@ -41,10 +41,10 @@ class DashboardView extends GetView<DashboardController> {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (controller.postList.isEmpty) {
+        if (controller.isFeedEmpty.value) {
           return const Center(
             child: Text(
-              "Henüz hiç gönderi yok.\nİlk gönderiyi sen ekle!",
+              "Ana akışınızda henüz gönderi yok.\nKeşfet'ten yeni kişiler takip edin!",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),

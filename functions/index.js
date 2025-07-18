@@ -56,36 +56,52 @@ exports.onUserFollow = onDocumentUpdated("users/{userId}", async (event) => {
 
 // --- YENİ FONKSİYON 1: YENİ GÖNDERİ OLUŞTURULDUĞUNDA DAĞITMA ---
 exports.onPostCreated = onDocumentCreated("posts/{postId}", async (event) => {
-  // Yeni oluşturulan gönderinin verisini ve ID'sini al
   const postData = event.data.data();
   const postId = event.params.postId;
   const authorId = postData.authorId;
 
-  console.log(`New post ${postId} created by ${authorId}. Fanning out.`);
+  console.log(`[onPostCreated] Function triggered for post: ${postId} by author: ${authorId}`);
 
-  // Gönderiyi yapan kullanıcının takipçilerini bul
-  const followersSnapshot = await db.collection("users")
-      .where("following", "array-contains", authorId)
-      .get();
+  const db = getFirestore();
 
-  if (followersSnapshot.empty) {
-    console.log("Author has no followers, no need to fan-out.");
+  try {
+    // Gönderiyi yapan kullanıcının takipçilerini bul
+    const followersSnapshot = await db.collection("users")
+        .where("following", "array-contains", authorId)
+        .get();
+
+    // BULUNAN TAKİPÇİ SAYISINI LOGLA
+    console.log(`[onPostCreated] Found ${followersSnapshot.size} followers for author ${authorId}.`);
+
+    if (followersSnapshot.empty) {
+      console.log("[onPostCreated] Author has no followers. Fanning out only to the author.");
+    }
+
+    const batch = db.batch();
+
+    // Her bir takipçinin feed'ine bu yeni gönderiyi ekle
+    followersSnapshot.forEach((doc) => {
+      const followerId = doc.id;
+      // HANGİ TAKİPÇİYE YAZILDIĞINI LOGLA
+      console.log(`[onPostCreated] Fanning out post ${postId} to follower: ${followerId}`);
+      const followerFeedRef = db.doc(`feeds/${followerId}/user_feed_items/${postId}`);
+      batch.set(followerFeedRef, postData);
+    });
+
+    // Yazarın kendi feed'ine de gönderiyi ekle
+    console.log(`[onPostCreated] Fanning out post ${postId} to author's own feed: ${authorId}`);
+    const authorFeedRef = db.doc(`feeds/${authorId}/user_feed_items/${postId}`);
+    batch.set(authorFeedRef, postData);
+
+    await batch.commit();
+    console.log("[onPostCreated] Batch commit successful.");
+    return null;
+
+  } catch (error) {
+    // HATA OLURSA LOGLA
+    console.error(`[onPostCreated] Error fanning out post ${postId}:`, error);
+    return null;
   }
-
-  // Her bir takipçinin feed'ine bu yeni gönderiyi ekle
-  const batch = db.batch();
-  followersSnapshot.forEach((doc) => {
-    const followerId = doc.id;
-    const followerFeedRef = db.doc(`feeds/${followerId}/user_feed_items/${postId}`);
-    batch.set(followerFeedRef, postData);
-  });
-
-  // Yazarın kendi feed'ine de gönderiyi ekle
-  const authorFeedRef = db.doc(`feeds/${authorId}/user_feed_items/${postId}`);
-  batch.set(authorFeedRef, postData);
-
-  // Toplu yazma işlemini gerçekleştir
-  return batch.commit();
 });
 
 

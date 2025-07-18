@@ -11,23 +11,29 @@ class DashboardController extends GetxController {
 
   final RxList<PostModel> postList = <PostModel>[].obs;
   final RxBool isLoading = true.obs;
+  // Feed'in boş olup olmadığını daha anlamlı bir şekilde takip etmek için
+  final RxBool isFeedEmpty = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Kullanıcı giriş yapmış mı kontrol et
-    final currentUser = _auth.currentUser;
-    if (currentUser != null) {
-      // Doğrudan kullanıcının kişisel feed'ini dinle
-      postList.bindStream(_fetchPersonalizedFeed(currentUser.uid));
-    } else {
-      isLoading.value = false;
-    }
+    // Kullanıcının oturum durumundaki değişiklikleri dinle
+    _auth.authStateChanges().listen((user) {
+      if (user != null) {
+        // Kullanıcı giriş yapmışsa, onun kişisel feed'ini dinlemeye başla
+        postList.bindStream(_fetchPersonalizedFeed(user.uid));
+      } else {
+        // Kullanıcı çıkış yapmışsa, listeyi temizle ve yüklemeyi durdur
+        postList.clear();
+        isLoading.value = false;
+      }
+    });
   }
 
   Stream<List<PostModel>> _fetchPersonalizedFeed(String userId) {
+    isLoading.value = true; // Her yeni dinlemede yüklemeyi başlat
     return _firestore
-    // YENİ SORGUMUZ: Çok daha basit ve performanslı!
+    // YENİ VE DOĞRU YOL: Kişisel feed koleksiyonu
         .collection('feeds')
         .doc(userId)
         .collection('user_feed_items')
@@ -35,7 +41,9 @@ class DashboardController extends GetxController {
         .snapshots()
         .map((snapshot) {
       final posts = snapshot.docs.map((doc) => PostModel.fromMap(doc)).toList();
-      isLoading.value = false;
+      // Veri geldikten sonra feed'in boş olup olmadığını kontrol et
+      isFeedEmpty.value = posts.isEmpty;
+      isLoading.value = false; // Yükleme tamamlandı
       return posts;
     });
   }
