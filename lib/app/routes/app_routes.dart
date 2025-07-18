@@ -5,4 +5,5 @@ abstract class Routes {
   static const dashboard = '/dashboard'; // Dashboard Screen
   static const transfer = '/transfer'; // Transfer Screen
   static const createPost = '/create_post'; // create post screen
+  static const profile = '/profile/:userId';
 }

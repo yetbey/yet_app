@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yet_app/app/modules/dashboard/controllers/dashboard_controller.dart';
@@ -13,6 +14,15 @@ class DashboardView extends GetView<DashboardController> {
       appBar: AppBar(
         title: const Text('Feed'),
         actions: [
+          IconButton(
+            icon: Icon(Icons.person_outline),
+            onPressed: () {
+              final userId = FirebaseAuth.instance.currentUser?.uid;
+              if (userId != null) {
+                Get.toNamed('/profile/$userId');
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {

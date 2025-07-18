@@ -27,24 +27,30 @@ class CreatePostController extends GetxController {
   }
 
   Future<void> uploadPost() async {
-    if (selectedImagePath.value.isEmpty) {
-      Get.snackbar("Eksik Bilgi", "Lütfen bir resim seçin.");
-      return;
-    }
-    if (captionController.text.isEmpty) {
-      Get.snackbar("Eksik Bilgi", "Lütfen bir açıklama girin.");
-      return;
-    }
+    final caption = captionController.text.trim();
+    final imagePath = selectedImagePath.value;
 
+    if (imagePath.isEmpty && caption.isEmpty) {
+      Get.snackbar(
+        "Hata",
+        "Paylaşmak için bir resim seçin veya bir metin girin.",
+      );
+      return;
+    }
     isLoading.value = true;
+    String? downloadUrl;
 
     try {
       // Upload the image to Firebase Storage
-      String fileName = 'posts/${DateTime.now().millisecondsSinceEpoch}.png';
-      Reference storageRef = _storage.ref().child(fileName);
-      UploadTask uploadTask = storageRef.putFile(File(selectedImagePath.value));
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadUrl = await snapshot.ref.getDownloadURL();
+      if (imagePath.isNotEmpty) {
+        String fileName = 'posts/${DateTime.now().millisecondsSinceEpoch}.png';
+        Reference storageRef = _storage.ref().child(fileName);
+        UploadTask uploadTask = storageRef.putFile(
+          File(selectedImagePath.value),
+        );
+        TaskSnapshot snapshot = await uploadTask;
+        downloadUrl = await snapshot.ref.getDownloadURL();
+      }
 
       // Get the current user infos
       User? currentUser = _auth.currentUser;
@@ -65,7 +71,7 @@ class CreatePostController extends GetxController {
         'authorUsername': username,
         'authorProfilePhotoUrl': profilePic,
         'imageUrl': downloadUrl,
-        'caption': captionController.text,
+        'caption': caption,
         'likeCount': 0,
         'likes': [], // Beğenenlerin listesi
         'timestamp': Timestamp.now(),
