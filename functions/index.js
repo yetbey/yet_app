@@ -1,12 +1,11 @@
 // functions/index.js
 
-// v2 için gerekli importlar
-const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { onDocumentUpdated, onDocumentCreated, onDocumentDeleted } = require("firebase-functions/v2/firestore");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 
-// Admin SDK'yı başlat
 initializeApp();
+const db = getFirestore();
 
 /**
  * Bir kullanıcının 'following' listesi güncellendiğinde tetiklenir.
@@ -52,5 +51,70 @@ exports.onUserFollow = onDocumentUpdated("users/{userId}", async (event) => {
   }
 
   // Toplu işlemi gerçekleştir
+  return batch.commit();
+});
+
+// --- YENİ FONKSİYON 1: YENİ GÖNDERİ OLUŞTURULDUĞUNDA DAĞITMA ---
+exports.onPostCreated = onDocumentCreated("posts/{postId}", async (event) => {
+  // Yeni oluşturulan gönderinin verisini ve ID'sini al
+  const postData = event.data.data();
+  const postId = event.params.postId;
+  const authorId = postData.authorId;
+
+  console.log(`New post ${postId} created by ${authorId}. Fanning out.`);
+
+  // Gönderiyi yapan kullanıcının takipçilerini bul
+  const followersSnapshot = await db.collection("users")
+      .where("following", "array-contains", authorId)
+      .get();
+
+  if (followersSnapshot.empty) {
+    console.log("Author has no followers, no need to fan-out.");
+  }
+
+  // Her bir takipçinin feed'ine bu yeni gönderiyi ekle
+  const batch = db.batch();
+  followersSnapshot.forEach((doc) => {
+    const followerId = doc.id;
+    const followerFeedRef = db.doc(`feeds/${followerId}/user_feed_items/${postId}`);
+    batch.set(followerFeedRef, postData);
+  });
+
+  // Yazarın kendi feed'ine de gönderiyi ekle
+  const authorFeedRef = db.doc(`feeds/${authorId}/user_feed_items/${postId}`);
+  batch.set(authorFeedRef, postData);
+
+  // Toplu yazma işlemini gerçekleştir
+  return batch.commit();
+});
+
+
+// --- YENİ FONKSİYON 2: GÖNDERİ SİLİNDİĞİNDE FEED'LERDEN TEMİZLEME ---
+exports.onPostDeleted = onDocumentDeleted("posts/{postId}", async (event) => {
+  const deletedPost = event.data.data();
+  const postId = event.params.postId;
+  const authorId = deletedPost.authorId;
+
+  console.log(`Post ${postId} by ${authorId} was deleted. Fanning-in delete.`);
+
+  // Gönderiyi yapan kullanıcının takipçilerini bul
+  const followersSnapshot = await db.collection("users")
+      .where("following", "array-contains", authorId)
+      .get();
+
+  const batch = db.batch();
+
+  // Her bir takipçinin feed'inden bu gönderiyi sil
+  followersSnapshot.forEach((doc) => {
+    const followerId = doc.id;
+    const followerFeedRef = db.doc(`feeds/${followerId}/user_feed_items/${postId}`);
+    batch.delete(followerFeedRef);
+  });
+
+  // Yazarın kendi feed'inden de gönderiyi sil
+  const authorFeedRef = db.doc(`feeds/${authorId}/user_feed_items/${postId}`);
+  batch.delete(authorFeedRef);
+
+  // Toplu silme işlemini gerçekleştir
   return batch.commit();
 });

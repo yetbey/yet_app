@@ -31,7 +31,7 @@ class DashboardView extends GetView<DashboardController> {
                 middleText: "Çıkış yapmak istediğinizden emin misiniz?",
                 textConfirm: "Evet",
                 textCancel: "Hayır",
-                onConfirm: () => controller.logOut(),
+                onConfirm: () => controller.logout(),
               );
             },
           ),
