@@ -6,4 +6,5 @@ abstract class Routes {
   static const transfer = '/transfer'; // Transfer Screen
   static const createPost = '/create_post'; // create post screen
   static const profile = '/profile/:userId';
+  static const postDetail = '/post/:postId';
 }

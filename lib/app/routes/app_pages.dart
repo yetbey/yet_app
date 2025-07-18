@@ -7,6 +7,9 @@ import 'package:yet_app/app/modules/dashboard/bindings/dashboard_binding.dart';
 import 'package:yet_app/app/modules/dashboard/views/dashboard_view.dart';
 import 'package:yet_app/app/modules/profile/bindings/profile_binding.dart';
 import 'package:yet_app/app/modules/profile/views/profile_view.dart';
+
+import '../modules/post_detail/bindings/post_detail_binding.dart';
+import '../modules/post_detail/views/post_detail_view.dart';
 part 'app_routes.dart';
 
 class AppPages {
@@ -35,6 +38,11 @@ class AppPages {
       name: Routes.profile,
       page: () => const ProfileView(),
       binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: Routes.postDetail,
+      page: () => PostDetailView(),
+      binding: PostDetailBinding(),
     ),
   ];
 }

@@ -74,12 +74,15 @@ class PostWidget extends StatelessWidget {
                     color: isLiked ? Colors.red : Colors.grey,
                   ),
                 ),
-                IconButton(onPressed: () {}, icon: Icon(Icons.comment_outlined)),
+                IconButton(onPressed: () {
+                  Get.toNamed('/post/${post.id}');
+                }, icon: Icon(Icons.comment_outlined)),
                 IconButton(onPressed: () {}, icon: Icon(Icons.send_outlined)),
               ],
             ),
           ),
 
+          // Like Count
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
@@ -107,6 +110,19 @@ class PostWidget extends StatelessWidget {
               ),
             ),
           ),
+
+          if (post.commentCount > 0)
+            GestureDetector(
+              onTap: () => Get.toNamed('/post/${post.id}'),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
+                child: Text(
+                  '${post.commentCount} yorumun tümünü gör',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ),
+            ),
+          const SizedBox(height: 8),
         ],
       ),
     );

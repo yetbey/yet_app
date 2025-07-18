@@ -65,7 +65,7 @@ class CreatePostController extends GetxController {
       String username = userDoc.get('username');
       String? profilePic = userDoc.get('profilePhotoUrl');
 
-      // Save the Post infot to Firebase
+      // Save the Post infos to Firebase
       await _firestore.collection('posts').add({
         'authorId': currentUser.uid,
         'authorUsername': username,
@@ -73,7 +73,8 @@ class CreatePostController extends GetxController {
         'imageUrl': downloadUrl,
         'caption': caption,
         'likeCount': 0,
-        'likes': [], // Beğenenlerin listesi
+        'likes': [],
+        'commentCount': 0,
         'timestamp': Timestamp.now(),
       });
       Get.back();
