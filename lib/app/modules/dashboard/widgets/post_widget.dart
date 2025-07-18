@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:yet_app/app/data/models/post_model.dart';
 import 'package:get/get.dart';
 import 'package:yet_app/app/modules/dashboard/controllers/post_controller.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class PostWidget extends StatelessWidget {
   final PostModel post;
@@ -119,7 +120,7 @@ class PostWidget extends StatelessWidget {
                     IconButton(
                       onPressed: () => controller.toggleLike(post.id, post.likes),
                       icon: Icon(
-                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        isLiked ? Iconsax.heart: Iconsax.heart,
                         color: isLiked ? Colors.red : Colors.grey,
                       ),
                     ),
@@ -133,14 +134,14 @@ class PostWidget extends StatelessWidget {
                   children: [
                     IconButton(onPressed: () {
                       Get.toNamed('/post/${post.id}');
-                    }, icon: Icon(Icons.comment_outlined)),
+                    }, icon: Icon(Iconsax.message)),
                     Text(
                       post.commentCount.toString(),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
-                IconButton(onPressed: () {}, icon: Icon(Icons.send_outlined)),
+                IconButton(onPressed: () {}, icon: Icon(Iconsax.send_1)),
               ],
             ),
           ),
