@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yet_app/app/data/models/user_model.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,7 @@ class ProfileHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ProfileController>();
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -58,7 +60,10 @@ class ProfileHeaderWidget extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton(
+            // if-else kontrolünü Obx'in DIŞINA alıyoruz.
+            child: (user.id == currentUserId)
+            // 1. Kendi profili ise: Normal bir buton, Obx yok.
+                ? OutlinedButton(
               onPressed: () async {
                 var result = await Get.toNamed(Routes.editProfile);
                 if (result == true) {
@@ -66,8 +71,22 @@ class ProfileHeaderWidget extends StatelessWidget {
                 }
               },
               child: const Text("Profili Düzenle"),
-            ),
-          ),
+            )
+            // 2. Başkasının profili ise: Sadece bu butonu Obx ile sarmala.
+                : Obx(() {
+              return ElevatedButton(
+                onPressed: controller.toggleFollow,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: controller.isFollowing.value
+                      ? Colors.grey
+                      : Get.theme.primaryColor,
+                ),
+                child: Text(controller.isFollowing.value
+                    ? "Takipten Çık"
+                    : "Takip Et"),
+              );
+            }),
+          )
         ],
       ),
     );

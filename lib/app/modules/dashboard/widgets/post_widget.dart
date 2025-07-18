@@ -20,25 +20,30 @@ class PostWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Post Header - Username and Profile Picture
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: post.authorProfilePhotoUrl != null
-                      ? NetworkImage(post.authorProfilePhotoUrl!)
-                      : null,
-                  child: post.authorProfilePhotoUrl == null
-                      ? const Icon(Icons.person, size: 20)
-                      : null,
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  post.authorUsername,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+          GestureDetector(
+            onTap: () {
+              Get.toNamed('/profile/${post.authorId}');
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: post.authorProfilePhotoUrl != null
+                        ? NetworkImage(post.authorProfilePhotoUrl!)
+                        : null,
+                    child: post.authorProfilePhotoUrl == null
+                        ? const Icon(Icons.person, size: 20)
+                        : null,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    post.authorUsername,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
           ),
 
