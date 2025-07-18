@@ -10,4 +10,5 @@ abstract class Routes {
   static const profile = '/profile/:userId';
   static const postDetail = '/post/:postId';
   static const editProfile = '/edit-profile';
+  static const search = '/search';
 }

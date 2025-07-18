@@ -9,6 +9,8 @@ import 'package:yet_app/app/modules/profile/bindings/profile_binding.dart';
 import 'package:yet_app/app/modules/profile/views/profile_view.dart';
 import 'package:yet_app/app/modules/edit_profile/bindings/edit_profile_binding.dart';
 import 'package:yet_app/app/modules/edit_profile/views/edit_profile_view.dart';
+import 'package:yet_app/app/modules/search/bindings/search_binding.dart';
+import 'package:yet_app/app/modules/search/views/search_view.dart';
 import '../modules/post_detail/bindings/post_detail_binding.dart';
 import '../modules/post_detail/views/post_detail_view.dart';
 import '../modules/root/bindings/root_binding.dart';
@@ -63,6 +65,11 @@ class AppPages {
       name: Routes.editProfile,
       page: () => const EditProfileView(),
       binding: EditProfileBinding(),
+    ),
+    GetPage(
+      name: Routes.search,
+      page: () => const SearchView(),
+      binding: SearchBinding(),
     ),
   ];
 }
