@@ -1,53 +1,56 @@
 // functions/index.js
 
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-admin.initializeApp();
+// v2 için gerekli importlar
+const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { initializeApp } = require("firebase-admin/app");
+const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 
-const db = admin.firestore();
+// Admin SDK'yı başlat
+initializeApp();
 
 /**
  * Bir kullanıcının 'following' listesi güncellendiğinde tetiklenir.
- * Bu fonksiyon, takip edilen kullanıcının 'followers' listesini günceller.
+ * Bu fonksiyon, takip edilen/bırakılan kullanıcının 'followers' listesini günceller.
+ * YAZIM ŞEKLİ YENİ v2 SYNTAX'INA GÜNCELLENDİ.
  */
-exports.onUserFollow = functions.firestore
-    .document("users/{userId}")
-    .onUpdate(async (change, context) => {
-      const newData = change.after.data();
-      const previousData = change.before.data();
-      const userId = context.params.userId;
+exports.onUserFollow = onDocumentUpdated("users/{userId}", async (event) => {
+  // event objesinden önceki ve sonraki veriyi al
+  const afterData = event.data.after.data();
+  const beforeData = event.data.before.data();
+  // event objesinden parametreleri al
+  const userId = event.params.userId;
 
-      const newFollowing = newData.following || [];
-      const oldFollowing = previousData.following || [];
+  const db = getFirestore();
 
-      // Takip edilen yeni kişileri bul (eski listede olmayıp yeni listede olanlar)
-      const followedUsers = newFollowing.filter((u) => !oldFollowing.includes(u));
-      // Takipten çıkılan kişileri bul (eski listede olup yeni listede olmayanlar)
-      const unfollowedUsers = oldFollowing.filter((u) => !newFollowing.includes(u));
+  const newFollowing = afterData.following || [];
+  const oldFollowing = beforeData.following || [];
 
-      const promises = [];
+  if (newFollowing.length === oldFollowing.length) {
+    console.log(`No change in following for user ${userId}. Exiting function.`);
+    return null;
+  }
 
-      // Takip edilen her kullanıcı için 'followers' listesini güncelle
-      if (followedUsers.length > 0) {
-        console.log(`User ${userId} started following: ${followedUsers.join(", ")}`);
-        followedUsers.forEach((followedId) => {
-          const promise = db.collection("users").doc(followedId).update({
-            followers: admin.firestore.FieldValue.arrayUnion(userId),
-          });
-          promises.push(promise);
-        });
-      }
+  const followedUsers = newFollowing.filter((u) => !oldFollowing.includes(u));
+  const unfollowedUsers = oldFollowing.filter((u) => !newFollowing.includes(u));
 
-      // Takipten çıkılan her kullanıcı için 'followers' listesini güncelle
-      if (unfollowedUsers.length > 0) {
-        console.log(`User ${userId} unfollowed: ${unfollowedUsers.join(", ")}`);
-        unfollowedUsers.forEach((unfollowedId) => {
-          const promise = db.collection("users").doc(unfollowedId).update({
-            followers: admin.firestore.FieldValue.arrayRemove(userId),
-          });
-          promises.push(promise);
-        });
-      }
+  const batch = db.batch();
 
-      return Promise.all(promises);
+  if (followedUsers.length > 0) {
+    console.log(`User ${userId} started following: ${followedUsers.join(", ")}`);
+    followedUsers.forEach((followedId) => {
+      const docRef = db.collection("users").doc(followedId);
+      batch.update(docRef, { followers: FieldValue.arrayUnion(userId) });
     });
+  }
+
+  if (unfollowedUsers.length > 0) {
+    console.log(`User ${userId} unfollowed: ${unfollowedUsers.join(", ")}`);
+    unfollowedUsers.forEach((unfollowedId) => {
+      const docRef = db.collection("users").doc(unfollowedId);
+      batch.update(docRef, { followers: FieldValue.arrayRemove(userId) });
+    });
+  }
+
+  // Toplu işlemi gerçekleştir
+  return batch.commit();
+});
