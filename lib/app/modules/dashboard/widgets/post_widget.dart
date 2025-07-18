@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:yet_app/app/data/models/post_model.dart';
 import 'package:get/get.dart';
 import 'package:yet_app/app/modules/dashboard/controllers/post_controller.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
+
 
 class PostWidget extends StatelessWidget {
   final PostModel post;
@@ -14,36 +16,59 @@ class PostWidget extends StatelessWidget {
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
     final bool isLiked = post.likes.contains(currentUserId);
     return Card(
-      elevation: 2.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Post Header - Username and Profile Picture
-          GestureDetector(
-            onTap: () {
-              Get.toNamed('/profile/${post.authorId}');
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: post.authorProfilePhotoUrl != null
-                        ? NetworkImage(post.authorProfilePhotoUrl!)
-                        : null,
-                    child: post.authorProfilePhotoUrl == null
-                        ? const Icon(Icons.person, size: 20)
-                        : null,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed('/profile/${post.authorId}');
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: post.authorProfilePhotoUrl != null
+                              ? NetworkImage(post.authorProfilePhotoUrl!)
+                              : null,
+                          child: post.authorProfilePhotoUrl == null
+                              ? const Icon(Icons.person, size: 20)
+                              : null,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          post.authorUsername,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 10),
-                  Text(
-                    post.authorUsername,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
+                ),
+                const Spacer(),
+                if (post.authorId == currentUserId)
+                  PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == 'delete') {
+                        _showDeleteDialog(context, controller, post.id);
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'delete',
+                        child: Text('Sil'),
+                      )
+                    ],
+                  )
+              ],
             ),
           ),
 
@@ -67,35 +92,7 @@ class PostWidget extends StatelessWidget {
               ),
             ),
 
-          // Buttons
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: () => controller.toggleLike(post.id, post.likes),
-                  icon: Icon(
-                    isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: isLiked ? Colors.red : Colors.grey,
-                  ),
-                ),
-                IconButton(onPressed: () {
-                  Get.toNamed('/post/${post.id}');
-                }, icon: Icon(Icons.comment_outlined)),
-                IconButton(onPressed: () {}, icon: Icon(Icons.send_outlined)),
-              ],
-            ),
-          ),
-
-          // Like Count
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              '${post.likeCount} beğeni',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-
+          const SizedBox(height: 8),
           // Explanation
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -116,6 +113,34 @@ class PostWidget extends StatelessWidget {
             ),
           ),
 
+          // Buttons
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: Row(
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => controller.toggleLike(post.id, post.likes),
+                      icon: Icon(
+                        isLiked ? Iconsax.heart : Iconsax.heart,
+                        color: isLiked ? Colors.red : Colors.grey,
+                      ),
+                    ),
+                    Text(
+                      post.likeCount.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                IconButton(onPressed: () {
+                  Get.toNamed('/post/${post.id}');
+                }, icon: Icon(Iconsax.message)),
+                IconButton(onPressed: () {}, icon: Icon(Iconsax.send_1)),
+              ],
+            ),
+          ),
+
           if (post.commentCount > 0)
             GestureDetector(
               onTap: () => Get.toNamed('/post/${post.id}'),
@@ -132,4 +157,18 @@ class PostWidget extends StatelessWidget {
       ),
     );
   }
+
+  void _showDeleteDialog(BuildContext context, PostController controller, String postId) {
+    Get.defaultDialog(
+      title: "Gönderiyi Sil",
+      middleText: "Bu gönderiyi kalıcı olarak silmek istediğinizden emin misiniz?",
+      textConfirm: "Evet, Sil",
+      textCancel: "İptal",
+      confirmTextColor: Colors.white,
+      onConfirm: () {
+        controller.deletePost(postId); // post.id'yi controller'a iletiyoruz
+      },
+    );
+  }
+
 }
