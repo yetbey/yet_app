@@ -1,6 +1,7 @@
-// lib/app/modules/root/views/root_view.dart
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yet_app/app/modules/profile/views/profile_view.dart';
 import 'package:yet_app/app/modules/search/views/search_view.dart';
 import '../../dashboard/views/dashboard_view.dart';
 import '../../explore/views/explore_view.dart';
@@ -12,14 +13,16 @@ class RootView extends GetView<RootController> {
 
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
     return Scaffold(
       // Seçili sekmeye göre gövdeyi değiştir
       body: Obx(() => IndexedStack(
         index: controller.selectedIndex.value,
-        children: const [
+        children: [
           DashboardView(), // Index 0: Feed
           ExploreView(),    // Index 1: Explore
           SearchView(), // Index 2 Search
+          // ProfileView(),
         ],
       )),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
@@ -40,6 +43,11 @@ class RootView extends GetView<RootController> {
             icon: Icon(Icons.search),
             activeIcon: Icon(Iconsax.search_normal),
             label: 'Arama',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.profile_2user),
+            activeIcon: Icon(Iconsax.search_normal),
+            label: 'Profil',
           ),
         ],
       )),
