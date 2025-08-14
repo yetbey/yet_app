@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:yet_app/app/modules/dashboard/controllers/post_controller.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
+import '../../profile/controllers/profile_controller.dart';
+
 class PostWidget extends StatelessWidget {
   final PostModel post;
   const PostWidget({super.key, required this.post});
@@ -27,6 +29,7 @@ class PostWidget extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
+                    Get.delete<ProfileController>();
                     Get.toNamed('/profile/${post.authorId}');
                   },
                   child: Padding(

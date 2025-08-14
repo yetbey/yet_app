@@ -19,10 +19,30 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _userId = Get.parameters['userId']!;
-    _currentUserId = _auth.currentUser!.uid;
+    _currentUserId = _auth.currentUser?.uid ?? '';
+    _userId = Get.parameters['userId'] ?? _currentUserId;
+
+    if (_currentUserId.isEmpty) {
+      Get.snackbar("Hata", "Kullanıcı oturumu bulunamadı !");
+      isLoading.value = false;
+      return;
+    }
+
+    print('Profile Controller - Current User ID: $_currentUserId');
+    print('Profile Controller - Target User ID: $_userId');
+    print('Profile Controller - Parameters: ${Get.parameters}');
+
     fetchUserData();
     fetchUserPosts();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    if (_currentUserId.isNotEmpty) {
+      fetchUserData();
+      fetchUserPosts();
+    }
   }
 
   Future<void> fetchUserData() async {
@@ -67,9 +87,6 @@ class ProfileController extends GetxController {
       });
     }
 
-    // ÖNEMLİ: GetX'e 'user' nesnesinin içeriğinin değiştiğini bildiriyoruz.
-    // Bu komut, 'user'ı dinleyen tüm Obx widget'larının (takipçi sayısı gibi)
-    // kendilerini yeniden çizmesini tetikler.
     user.refresh();
   }
 

@@ -15,14 +15,13 @@ class RootView extends GetView<RootController> {
   Widget build(BuildContext context) {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     return Scaffold(
-      // Seçili sekmeye göre gövdeyi değiştir
       body: Obx(() => IndexedStack(
         index: controller.selectedIndex.value,
         children: [
           DashboardView(), // Index 0: Feed
           ExploreView(),    // Index 1: Explore
           SearchView(), // Index 2 Search
-          // ProfileView(),
+          ProfileView(),
         ],
       )),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
